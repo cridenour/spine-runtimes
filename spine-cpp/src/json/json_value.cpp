@@ -1,6 +1,6 @@
 #include <iostream>
-#include <json/value.h>
-#include <json/writer.h>
+#include <spine/json/value.h>
+#include <spine/json/writer.h>
 #include <utility>
 #include <stdexcept>
 #include <cstring>
@@ -10,7 +10,7 @@
 #endif
 #include <cstddef>    // size_t
 #ifndef JSON_USE_SIMPLE_INTERNAL_ALLOCATOR
-# include <json/json_batchallocator.h>
+# include <spine/json/json_batchallocator.h>
 #endif // #ifndef JSON_USE_SIMPLE_INTERNAL_ALLOCATOR
 
 #define JSON_ASSERT_UNREACHABLE assert( false )
@@ -119,11 +119,11 @@ static struct DummyValueAllocatorInitializer {
 // //////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////
 #ifdef JSON_VALUE_USE_INTERNAL_MAP
-# include <json/json_internalarray.inl>
-# include <json/json_internalmap.inl>
+# include <spine/json/json_internalarray.inl>
+# include <spine/json/json_internalmap.inl>
 #endif // JSON_VALUE_USE_INTERNAL_MAP
 
-# include <json/json_valueiterator.inl>
+# include <spine/json/json_valueiterator.inl>
 
 
 // //////////////////////////////////////////////////////////////////

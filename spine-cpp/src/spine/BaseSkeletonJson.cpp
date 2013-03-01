@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <stdexcept>
-#include <json/json.h>
+#include <spine/json/json.h>
 #include <spine/BaseSkeletonJson.h>
 #include <spine/BaseAttachmentLoader.h>
 #include <spine/BaseRegionAttachment.h>

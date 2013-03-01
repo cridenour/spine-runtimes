@@ -8,6 +8,13 @@ AtlasPage::AtlasPage(SDL_Texture *t, float w, float h): texture(t), texw(w), tex
 {
 }
 
+AtlasPage::~AtlasPage() {
+    if (texture) {
+        SDL_DestroyTexture(texture);
+        texture = NULL;
+    }
+}
+
 Atlas::Atlas (SDL_Renderer *r, const std::string &text):renderer(r) {
 	load(text);
 }
