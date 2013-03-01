@@ -7,6 +7,7 @@
 namespace spine {
 
 typedef std::vector<SDL_Vertex> VertexArray;
+typedef std::vector<int> intArray;
 
 }
 

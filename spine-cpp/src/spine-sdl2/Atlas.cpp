@@ -4,6 +4,10 @@
 
 namespace spine {
 
+AtlasPage::AtlasPage(SDL_Texture *t, float w, float h): texture(t), texw(w), texh(h)
+{
+}
+
 Atlas::Atlas (SDL_Renderer *r, const std::string &text):renderer(r) {
 	load(text);
 }
@@ -13,12 +17,12 @@ Atlas::Atlas (SDL_Renderer *r, const char *begin, const char *end):renderer(r) {
 }
 
 BaseAtlasPage* Atlas::newAtlasPage (std::string name) {
-	AtlasPage *page = new AtlasPage();
-
 	SDL_Surface *surface = IMG_Load(name.c_str());
     if (surface) {
-        page->texture = SDL_CreateTextureFromSurface(renderer, surface);
-        if (page->texture) {
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (texture) {
+            SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+            AtlasPage *page = new AtlasPage(texture, (float)surface->w, (float)surface->h);
             SDL_FreeSurface(surface);
             return page;
         }

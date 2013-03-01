@@ -9,12 +9,14 @@
 
 namespace spine {
 
-RegionAttachment::RegionAttachment (AtlasRegion *region) {
+RegionAttachment::RegionAttachment (AtlasRegion *region):texture(NULL) {
 	texture = region->page->texture; // BOZO - Resolve attachment as late as possible?
-	int u = region->x;
-	int u2 = u + region->width;
-	int v = region->y;
-	int v2 = v + region->height;
+	float texw = region->page->texw;
+	float texh = region->page->texh;
+	float u = region->x / texw;
+	float u2 = (region->x + region->width) / texw;
+	float v = region->y / texh;
+	float v2 = (region->y + region->height) / texh;
 	if (region->rotate) {
 		vertices[1].tex_coord.x = u;
 		vertices[1].tex_coord.y = v2;
@@ -64,10 +66,18 @@ void RegionAttachment::draw (Slot *slot) {
 	updateWorldVertices(slot->bone);
 
 	skeleton->texture = texture;
+	int base = skeleton->vertexArray.size();
+
 	skeleton->vertexArray.push_back(vertices[0]);
 	skeleton->vertexArray.push_back(vertices[1]);
 	skeleton->vertexArray.push_back(vertices[2]);
 	skeleton->vertexArray.push_back(vertices[3]);
+	skeleton->indices.push_back(base);
+	skeleton->indices.push_back(base+1);
+	skeleton->indices.push_back(base+2);
+	skeleton->indices.push_back(base);
+    skeleton->indices.push_back(base+2);
+    skeleton->indices.push_back(base+3);
 }
 
 void RegionAttachment::updateWorldVertices (spine::Bone *bone) {

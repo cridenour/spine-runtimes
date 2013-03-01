@@ -9,6 +9,8 @@ namespace spine {
 class AtlasPage: public BaseAtlasPage {
 public:
 	SDL_Texture *texture;
+	float texw, texh;
+	AtlasPage(SDL_Texture *t, float w, float h);
 };
 
 //

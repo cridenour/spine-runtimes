@@ -11,6 +11,7 @@ class Skeleton: public BaseSkeleton {
 
 public:
 	VertexArray vertexArray;
+	intArray indices;
 	SDL_Texture *texture;
 
 	Skeleton (SkeletonData *skeletonData);
