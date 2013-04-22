@@ -24,7 +24,7 @@ void Skeleton::draw (SDL_Renderer *renderer) const {
 
 /*	for (int i=0; i<vertexArray.size(); i++) {
 	    SDL_Vertex *v = (SDL_Vertex*)&vertexArray[i];
-	    printf("Vertex %d, at %fx%f texcoord %fx%f color %d,%d,%d,%d\n", i, v->position.x, v->position.y, v->tex_coord.x, v->tex_coord.y, v->color.r, v->color.g, v->color.b, v->color.unused);
+	    printf("Vertex %d, at %fx%f texcoord %fx%f color %d,%d,%d,%d\n", i, v->position.x, v->position.y, v->tex_coord.x, v->tex_coord.y, v->color.r, v->color.g, v->color.b, v->color.a);
 	}
 	//printf("skeleton::draw %u %u\n", vertexArray.size(), texture);*/
 

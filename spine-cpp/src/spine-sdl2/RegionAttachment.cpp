@@ -48,19 +48,19 @@ void RegionAttachment::draw (Slot *slot) {
 	vertices[0].color.r = r;
 	vertices[0].color.g = g;
 	vertices[0].color.b = b;
-	vertices[0].color.unused = a;
+	vertices[0].color.a = a;
 	vertices[1].color.r = r;
 	vertices[1].color.g = g;
 	vertices[1].color.b = b;
-	vertices[1].color.unused = a;
+	vertices[1].color.a = a;
 	vertices[2].color.r = r;
 	vertices[2].color.g = g;
 	vertices[2].color.b = b;
-	vertices[2].color.unused = a;
+	vertices[2].color.a = a;
 	vertices[3].color.r = r;
 	vertices[3].color.g = g;
 	vertices[3].color.b = b;
-	vertices[3].color.unused = a;
+	vertices[3].color.a = a;
 
 	updateOffset(); // BOZO - Move to resolve()?
 	updateWorldVertices(slot->bone);
