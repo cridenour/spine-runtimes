@@ -23,7 +23,7 @@
 /* Json */
 /* JSON parser in C. */
 
-#include "Json.h"
+#include <spine/Json.h>
 #include <math.h>
 #include <stdio.h>
 #include <ctype.h>

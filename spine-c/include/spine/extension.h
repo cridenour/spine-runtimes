@@ -96,7 +96,7 @@ extern "C" {
  * Functions that must be implemented:
  */
 
-void _AtlasPage_createTexture (AtlasPage* self, const char* path);
+void _AtlasPage_createTexture (AtlasPage* self, const char* path, void *param);
 void _AtlasPage_disposeTexture (AtlasPage* self);
 char* _Util_readFile (const char* path, int* length);
 

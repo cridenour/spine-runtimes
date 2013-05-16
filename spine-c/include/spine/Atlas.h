@@ -95,9 +95,9 @@ typedef struct {
 } Atlas;
 
 /* Image files referenced in the atlas file will be prefixed with dir. */
-Atlas* Atlas_readAtlas (const char* data, int length, const char* dir);
+Atlas* Atlas_readAtlas (const char* data, int length, const char* dir, void *param);
 /* Image files referenced in the atlas file will be prefixed with the directory containing the atlas file. */
-Atlas* Atlas_readAtlasFile (const char* path);
+Atlas* Atlas_readAtlasFile (const char* path, void *param);
 void Atlas_dispose (Atlas* atlas);
 
 /* Returns 0 if the region was not found. */

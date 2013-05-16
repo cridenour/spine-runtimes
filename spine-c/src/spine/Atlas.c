@@ -166,7 +166,7 @@ static const char* formatNames[] = {"Alpha", "Intensity", "LuminanceAlpha", "RGB
 static const char* textureFilterNames[] = {"Nearest", "Linear", "MipMap", "MipMapNearestNearest", "MipMapLinearNearest",
 		"MipMapNearestLinear", "MipMapLinearLinear"};
 
-Atlas* Atlas_readAtlas (const char* begin, int length, const char* dir) {
+Atlas* Atlas_readAtlas (const char* begin, int length, const char* dir, void *param) {
 	int count;
 	const char* end = begin + length;
 	int dirLength = strlen(dir);
@@ -211,7 +211,7 @@ Atlas* Atlas_readAtlas (const char* begin, int length, const char* dir) {
 				page->vWrap = *str.begin == 'x' ? ATLAS_CLAMPTOEDGE : (*str.begin == 'y' ? ATLAS_REPEAT : ATLAS_REPEAT);
 			}
 
-			_AtlasPage_createTexture(page, path);
+			_AtlasPage_createTexture(page, path, param);
 			FREE(path);
 		} else {
 			AtlasRegion *region = AtlasRegion_create();
@@ -280,7 +280,7 @@ Atlas* Atlas_readAtlas (const char* begin, int length, const char* dir) {
 	return self;
 }
 
-Atlas* Atlas_readAtlasFile (const char* path) {
+Atlas* Atlas_readAtlasFile (const char* path, void *param) {
 	int dirLength;
 	char *dir;
 	int length;
@@ -299,7 +299,7 @@ Atlas* Atlas_readAtlasFile (const char* path) {
 	dir[dirLength] = '\0';
 
 	data = _Util_readFile(path, &length);
-	if (data) atlas = Atlas_readAtlas(data, length, dir);
+	if (data) atlas = Atlas_readAtlas(data, length, dir, param);
 
 	FREE(data);
 	FREE(dir);
