@@ -1,7 +1,30 @@
+/*******************************************************************************
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 
 package com.esotericsoftware.spine.attachments;
 
-import com.esotericsoftware.spine.Attachment;
 import com.esotericsoftware.spine.Bone;
 import com.esotericsoftware.spine.Slot;
 
@@ -37,8 +60,8 @@ public class RegionAttachment extends Attachment {
 			if (region.rotate) {
 				localX += region.offsetX / region.originalWidth * height;
 				localY += region.offsetY / region.originalHeight * width;
-				localX2 -= (region.originalWidth - region.offsetX - region.packedHeight) / region.originalWidth * width;
-				localY2 -= (region.originalHeight - region.offsetY - region.packedWidth) / region.originalHeight * height;
+				localX2 -= (region.originalWidth - region.offsetX - region.packedHeight) / region.originalWidth * height;
+				localY2 -= (region.originalHeight - region.offsetY - region.packedWidth) / region.originalHeight * width;
 			} else {
 				localX += region.offsetX / region.originalWidth * width;
 				localY += region.offsetY / region.originalHeight * height;
@@ -104,13 +127,11 @@ public class RegionAttachment extends Attachment {
 	}
 
 	public TextureRegion getRegion () {
-		if (region == null) throw new IllegalStateException("RegionAttachment is not resolved: " + this);
+		if (region == null) throw new IllegalStateException("Region has not been set: " + this);
 		return region;
 	}
 
-	public void draw (SpriteBatch batch, Slot slot) {
-		if (region == null) throw new IllegalStateException("RegionAttachment is not resolved: " + this);
-
+	public void updateVertices (Slot slot) {
 		Color skeletonColor = slot.getSkeleton().getColor();
 		Color slotColor = slot.getColor();
 		float color = NumberUtils.intToFloatColor( //
@@ -124,14 +145,8 @@ public class RegionAttachment extends Attachment {
 		vertices[C3] = color;
 		vertices[C4] = color;
 
-		updateWorldVertices(slot.getBone());
-
-		batch.draw(region.getTexture(), vertices, 0, vertices.length);
-	}
-
-	public void updateWorldVertices (Bone bone) {
-		float[] vertices = this.vertices;
 		float[] offset = this.offset;
+		Bone bone = slot.getBone();
 		float x = bone.getWorldX();
 		float y = bone.getWorldY();
 		float m00 = bone.getM00();
@@ -148,7 +163,7 @@ public class RegionAttachment extends Attachment {
 		vertices[Y4] = offset[6] * m10 + offset[7] * m11 + y;
 	}
 
-	public float[] getWorldVertices () {
+	public float[] getVertices () {
 		return vertices;
 	}
 

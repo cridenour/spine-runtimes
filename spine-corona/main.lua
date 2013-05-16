@@ -1,25 +1,26 @@
 
-local spine = require "spine.spine"
+local spine = require "spine-corona.spine"
 
--- Optional attachment resolver customizes where images are loaded. Eg, could use an image sheet.
-local attachmentResolver = spine.AttachmentResolver.new()
-function attachmentResolver:createImage (attachment)
-	return display.newImage("data/" .. attachment.name .. ".png")
-end
+--local name = "goblins"
+local name = "spineboy"
 
-local json = spine.SkeletonJson.new(attachmentResolver)
+local json = spine.SkeletonJson.new()
 json.scale = 1
-local skeletonData = json:readSkeletonDataFile("data/spineboy-skeleton.json")
-local walkAnimation = json:readAnimationFile(skeletonData, "data/spineboy-walk.json")
+local skeletonData = json:readSkeletonDataFile("data/" .. name .. "/" .. name .. ".json")
+local walkAnimation = skeletonData:findAnimation("walk")
 
--- Optional second parameter can be the group for the Skeleton to use. Eg, could be an image group.
 local skeleton = spine.Skeleton.new(skeletonData)
-skeleton.x = 150
-skeleton.y = 325
+function skeleton:createImage (attachment)
+	-- Customize where images are loaded.
+	return display.newImage("data/" .. name .. "/" .. attachment.name .. ".png")
+end
+skeleton.group.x = 150
+skeleton.group.y = 325
 skeleton.flipX = false
 skeleton.flipY = false
 skeleton.debug = true -- Omit or set to false to not draw debug lines on top of the images.
-skeleton:setToBindPose()
+if name == "goblins" then skeleton:setSkin("goblingirl") end
+skeleton:setToSetupPose()
 
 local lastTime = 0
 local animationTime = 0
@@ -34,3 +35,4 @@ Runtime:addEventListener("enterFrame", function (event)
 	walkAnimation:apply(skeleton, animationTime, true)
 	skeleton:updateWorldTransform()
 end)
+

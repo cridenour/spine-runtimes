@@ -1,5 +1,31 @@
+/*******************************************************************************
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 
 package com.esotericsoftware.spine;
+
+import com.esotericsoftware.spine.attachments.Attachment;
 
 import com.badlogic.gdx.graphics.Color;
 
@@ -25,8 +51,8 @@ public class Slot {
 		this.data = data;
 		this.skeleton = skeleton;
 		this.bone = bone;
-		color = new Color(1, 1, 1, 1);
-		setToBindPose();
+		color = new Color();
+		setToSetupPose();
 	}
 
 	/** Copy constructor. */
@@ -79,13 +105,13 @@ public class Slot {
 		return skeleton.time - attachmentTime;
 	}
 
-	void setToBindPose (int slotIndex) {
+	void setToSetupPose (int slotIndex) {
 		color.set(data.color);
 		setAttachment(data.attachmentName == null ? null : skeleton.getAttachment(slotIndex, data.attachmentName));
 	}
 
-	public void setToBindPose () {
-		setToBindPose(skeleton.data.slots.indexOf(data, true));
+	public void setToSetupPose () {
+		setToSetupPose(skeleton.data.slots.indexOf(data, true));
 	}
 
 	public String toString () {

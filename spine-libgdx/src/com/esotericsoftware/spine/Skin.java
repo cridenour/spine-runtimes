@@ -1,5 +1,31 @@
+/*******************************************************************************
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 
 package com.esotericsoftware.spine;
+
+import com.esotericsoftware.spine.attachments.Attachment;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -54,13 +80,25 @@ public class Skin {
 		return name;
 	}
 
+	/** Attach each attachment in this skin if the corresponding attachment in the old skin is currently attached. */
+	void attachAll (Skeleton skeleton, Skin oldSkin) {
+		for (Entry<Key, Attachment> entry : oldSkin.attachments.entries()) {
+			int slotIndex = entry.key.slotIndex;
+			Slot slot = skeleton.slots.get(slotIndex);
+			if (slot.attachment == entry.value) {
+				Attachment attachment = getAttachment(slotIndex, entry.key.name);
+				if (attachment != null) slot.setAttachment(attachment);
+			}
+		}
+	}
+
 	static class Key {
 		int slotIndex;
 		String name;
 		int hashCode;
 
 		public void set (int slotName, String name) {
-			if (name == null) throw new IllegalArgumentException("attachmentName cannot be null.");
+			if (name == null) throw new IllegalArgumentException("name cannot be null.");
 			this.slotIndex = slotName;
 			this.name = name;
 			hashCode = 31 * (31 + name.hashCode()) + slotIndex;
@@ -80,18 +118,6 @@ public class Skin {
 
 		public String toString () {
 			return slotIndex + ":" + name;
-		}
-	}
-
-	/** Attach all attachments from this skin if the corresponding attachment from the old skin is currently attached. */
-	void attachAll (Skeleton skeleton, Skin oldSkin) {
-		for (Entry<Key, Attachment> entry : oldSkin.attachments.entries()) {
-			int slotIndex = entry.key.slotIndex;
-			Slot slot = skeleton.slots.get(slotIndex);
-			if (slot.attachment == entry.value) {
-				Attachment attachment = getAttachment(slotIndex, entry.key.name);
-				if (attachment != null) slot.setAttachment(attachment);
-			}
 		}
 	}
 }

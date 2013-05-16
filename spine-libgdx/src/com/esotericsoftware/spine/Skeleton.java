@@ -1,14 +1,37 @@
+/*******************************************************************************
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 
 package com.esotericsoftware.spine;
 
-import com.esotericsoftware.spine.Skin.Key;
+import com.esotericsoftware.spine.attachments.Attachment;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 public class Skeleton {
 	final SkeletonData data;
@@ -49,7 +72,7 @@ public class Skeleton {
 
 		bones = new Array(skeleton.bones.size);
 		for (Bone bone : skeleton.bones) {
-			Bone parent = bones.get(skeleton.bones.indexOf(bone.parent, true));
+			Bone parent = bone.parent == null ? null : bones.get(skeleton.bones.indexOf(bone.parent, true));
 			bones.add(new Bone(bone, parent));
 		}
 
@@ -78,57 +101,22 @@ public class Skeleton {
 			bones.get(i).updateWorldTransform(flipX, flipY);
 	}
 
-	/** Sets the bones and slots to their bind pose values. */
-	public void setToBindPose () {
-		setBonesToBindPose();
-		setSlotsToBindPose();
+	/** Sets the bones and slots to their setup pose values. */
+	public void setToSetupPose () {
+		setBonesToSetupPose();
+		setSlotsToSetupPose();
 	}
 
-	public void setBonesToBindPose () {
+	public void setBonesToSetupPose () {
 		Array<Bone> bones = this.bones;
 		for (int i = 0, n = bones.size; i < n; i++)
-			bones.get(i).setToBindPose();
+			bones.get(i).setToSetupPose();
 	}
 
-	public void setSlotsToBindPose () {
+	public void setSlotsToSetupPose () {
 		Array<Slot> slots = this.slots;
 		for (int i = 0, n = slots.size; i < n; i++)
-			slots.get(i).setToBindPose(i);
-	}
-
-	public void draw (SpriteBatch batch) {
-		Array<Slot> drawOrder = this.drawOrder;
-		for (int i = 0, n = drawOrder.size; i < n; i++) {
-			Slot slot = drawOrder.get(i);
-			Attachment attachment = slot.attachment;
-			if (attachment != null) {
-				if (!attachment.resolved) data.attachmentResolver.resolve(attachment);
-				attachment.updateOffset();
-				attachment.draw(batch, slot);
-			}
-		}
-	}
-
-	public void drawDebug (ShapeRenderer renderer) {
-		renderer.setColor(Color.RED);
-		renderer.begin(ShapeType.Line);
-		for (int i = 0, n = bones.size; i < n; i++) {
-			Bone bone = bones.get(i);
-			if (bone.parent == null) continue;
-			float x = bone.data.length * bone.m00 + bone.worldX;
-			float y = bone.data.length * bone.m10 + bone.worldY;
-			renderer.line(bone.worldX, bone.worldY, x, y);
-		}
-		renderer.end();
-
-		renderer.setColor(Color.GREEN);
-		renderer.begin(ShapeType.Filled);
-		for (int i = 0, n = bones.size; i < n; i++) {
-			Bone bone = bones.get(i);
-			renderer.setColor(Color.GREEN);
-			renderer.circle(bone.worldX, bone.worldY, 3);
-		}
-		renderer.end();
+			slots.get(i).setToSetupPose(i);
 	}
 
 	public SkeletonData getData () {
@@ -208,7 +196,7 @@ public class Skeleton {
 	}
 
 	/** Sets the skin used to look up attachments not found in the {@link SkeletonData#getDefaultSkin() default skin}. Attachments
-	 * from the new skin are attached if the corresponding attachment from the old skin is currently attached.
+	 * from the new skin are attached if the corresponding attachment from the old skin was attached.
 	 * @param newSkin May be null. */
 	public void setSkin (Skin newSkin) {
 		if (skin != null && newSkin != null) newSkin.attachAll(this, skin);
@@ -223,22 +211,28 @@ public class Skeleton {
 	/** @return May be null. */
 	public Attachment getAttachment (int slotIndex, String attachmentName) {
 		if (attachmentName == null) throw new IllegalArgumentException("attachmentName cannot be null.");
-		if (data.defaultSkin != null) {
-			Attachment attachment = data.defaultSkin.getAttachment(slotIndex, attachmentName);
+		if (skin != null) {
+			Attachment attachment = skin.getAttachment(slotIndex, attachmentName);
 			if (attachment != null) return attachment;
 		}
-		if (skin != null) return skin.getAttachment(slotIndex, attachmentName);
+		if (data.defaultSkin != null) return data.defaultSkin.getAttachment(slotIndex, attachmentName);
 		return null;
 	}
 
 	/** @param attachmentName May be null. */
 	public void setAttachment (String slotName, String attachmentName) {
 		if (slotName == null) throw new IllegalArgumentException("slotName cannot be null.");
-		if (attachmentName == null) throw new IllegalArgumentException("attachmentName cannot be null.");
+		Array<Slot> slots = this.slots;
 		for (int i = 0, n = slots.size; i < n; i++) {
 			Slot slot = slots.get(i);
 			if (slot.data.name.equals(slotName)) {
-				slot.setAttachment(getAttachment(i, attachmentName));
+				Attachment attachment = null;
+				if (attachmentName != null) {
+					attachment = getAttachment(i, attachmentName);
+					if (attachment == null)
+						throw new IllegalArgumentException("Attachment not found: " + attachmentName + ", for slot: " + slotName);
+				}
+				slot.setAttachment(attachment);
 				return;
 			}
 		}
@@ -275,5 +269,9 @@ public class Skeleton {
 
 	public void update (float delta) {
 		time += delta;
+	}
+
+	public String toString () {
+		return data.name != null ? data.name : super.toString();
 	}
 }

@@ -1,3 +1,27 @@
+/*******************************************************************************
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 
 package com.esotericsoftware.spine;
 
@@ -22,7 +46,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class SkeletonTest extends ApplicationAdapter {
 	SpriteBatch batch;
 	float time;
-	ShapeRenderer renderer;
+	SkeletonRenderer renderer;
+	SkeletonRendererDebug debugRenderer;
 
 	SkeletonData skeletonData;
 	Skeleton skeleton;
@@ -30,9 +55,10 @@ public class SkeletonTest extends ApplicationAdapter {
 
 	public void create () {
 		batch = new SpriteBatch();
-		renderer = new ShapeRenderer();
+		renderer = new SkeletonRenderer();
+		debugRenderer = new SkeletonRendererDebug();
 
-		final String name = "goblins";
+		final String name = "goblins"; // "spineboy";
 
 		// A regular texture atlas would normally usually be used. This returns a white image for images not found in the atlas.
 		Pixmap pixmap = new Pixmap(32, 32, Format.RGBA8888);
@@ -52,18 +78,18 @@ public class SkeletonTest extends ApplicationAdapter {
 		if (true) {
 			SkeletonJson json = new SkeletonJson(atlas);
 			// json.setScale(2);
-			skeletonData = json.readSkeletonData(Gdx.files.internal(name + "-skeleton.json"));
-			animation = json.readAnimation(Gdx.files.internal(name + "-walk.json"), skeletonData);
+			skeletonData = json.readSkeletonData(Gdx.files.internal(name + ".json"));
 		} else {
 			SkeletonBinary binary = new SkeletonBinary(atlas);
 			// binary.setScale(2);
 			skeletonData = binary.readSkeletonData(Gdx.files.internal(name + ".skel"));
-			animation = binary.readAnimation(Gdx.files.internal(name + "-walk.anim"), skeletonData);
 		}
+		animation = skeletonData.findAnimation("walk");
 
 		skeleton = new Skeleton(skeletonData);
 		if (name.equals("goblins")) skeleton.setSkin("goblin");
-		skeleton.setToBindPose();
+		skeleton.setToSetupPose();
+		skeleton = new Skeleton(skeleton);
 
 		Bone root = skeleton.getRootBone();
 		root.x = 50;
@@ -73,12 +99,15 @@ public class SkeletonTest extends ApplicationAdapter {
 		skeleton.updateWorldTransform();
 
 		Gdx.input.setInputProcessor(new InputAdapter() {
+			public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+				keyDown(0);
+				return true;
+			}
+
 			public boolean keyDown (int keycode) {
-				if (keycode == Keys.SPACE) {
-					if (name.equals("goblins")) {
-						skeleton.setSkin(skeleton.getSkin().getName().equals("goblin") ? "goblingirl" : "goblin");
-						skeleton.setSlotsToBindPose();
-					}
+				if (name.equals("goblins")) {
+					skeleton.setSkin(skeleton.getSkin().getName().equals("goblin") ? "goblingirl" : "goblin");
+					skeleton.setSlotsToSetupPose();
 				}
 				return true;
 			}
@@ -95,29 +124,24 @@ public class SkeletonTest extends ApplicationAdapter {
 		root.setX(x);
 
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.setColor(Color.GRAY);
 
-		animation.apply(skeleton, time, true);
+		animation.apply(skeleton, time, false);
 		skeleton.updateWorldTransform();
 		skeleton.update(Gdx.graphics.getDeltaTime());
-		skeleton.draw(batch);
 
+		batch.begin();
+		renderer.draw(batch, skeleton);
 		batch.end();
 
-		skeleton.drawDebug(renderer);
+		debugRenderer.draw(batch, skeleton);
 	}
 
 	public void resize (int width, int height) {
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
-		renderer.setProjectionMatrix(batch.getProjectionMatrix());
+		debugRenderer.getShapeRenderer().setProjectionMatrix(batch.getProjectionMatrix());
 	}
 
 	public static void main (String[] args) throws Exception {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "Skeleton Test";
-		config.width = 640;
-		config.height = 480;
-		new LwjglApplication(new SkeletonTest(), config);
+		new LwjglApplication(new SkeletonTest());
 	}
 }

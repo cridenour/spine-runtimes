@@ -1,7 +1,60 @@
+spine-c/Debug/*
 spine-cpp/Debug/*
+spine-sfml/Debug/*
 spine-libgdx/bin/*
-spine-libgdx/libs/gdx-backend-lwjgl-natives.jar
-spine-libgdx/libs/gdx-backend-lwjgl.jar
-spine-libgdx/libs/gdx-natives.jar
-spine-libgdx/libs/gdx.jar
+spine-libgdx/libs/*
 target
+
+*Debug.win32
+*.sdf
+*.opensdf
+*.suo
+*.ipch
+
+spine-cocos2dx/cocos2dx/
+!spine-cocos2dx/cocos2dx/Place cocos2dx here.txt
+*.swp
+.DS_Store
+xcuserdata
+
+spine-cocos2d-iphone/libs/*
+!spine-cocos2d-iphone/libs/cocos2d/Place cocos2d here.txt
+!spine-cocos2d-iphone/libs/CocosDenshion/Place CocosDenshion here.txt
+!spine-cocos2d-iphone/libs/kazmath/Place kazmath here.txt
+
+*.user
+forums
+spine-csharp/bin
+spine-csharp/obj
+
+spine-xna/bin
+spine-xna/obj
+spine-xna/example/bin
+spine-xna/example/obj
+
+spine-unity/Assets/Plugins/Spine/spine-csharp
+!spine-unity/Assets/Plugins/Spine/spine-csharp/Place spine-csharp here.txt
+spine-unity/ProjectSettings
+spine-unity/Temp
+spine-unity/Library
+spine-unity/*.sln
+*.userprefs
+*.pidb
+Assembly-*.csproj
+Assembly-*.pidb
+spine-unity4
+spine-unity3
+
+spine-corona/spine-lua/
+!spine-corona/spine-lua/Place spine-lua here.txt
+
+spine-love/spine-lua/
+spine-love/love/
+!spine-love/spine-lua/Place spine-lua here.txt
+
+spine-as3/spine-as3/bin
+spine-as3/spine-as3-example/bin-debug
+spine-as3/spine-as3-example/bin-release
+spine-starling/spine-starling/bin
+spine-starling/spine-starling-example/bin-debug
+spine-starling/spine-starling-example/bin-release
